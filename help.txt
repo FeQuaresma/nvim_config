@@ -1,0 +1,7 @@
+:help ins-completion
+:help lsp
+
+to search
+	Treesitter
+	Telescope
+	LSP
