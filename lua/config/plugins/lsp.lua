@@ -2,7 +2,9 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      'saghen/blink.cmp',
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+      "saghen/blink.cmp",
       {
         "folke/lazydev.nvim",
         ft = "lua",
@@ -16,20 +18,28 @@ return {
     config = function()
       local capabilities = require('blink.cmp').get_lsp_capabilities()
 
-      -- Para descobrir quais servers estão disponível :help lspconfig-all
-      require("lspconfig").lua_ls.setup { capabilities = capabilities }
+      -- Setup Mason
+      require("mason").setup()
+      require("mason-lspconfig").setup {
+        ensure_installed = { "lua_ls", "ts_ls" },
+      }
 
-      -- Configuração para JavaScript/TypeScript (tsserver)
-      require("lspconfig").ts_ls.setup { capabilities = capabilities }
-      -- vim.keymap.set("n", "<space>f", function() vim.lsp.buf.format() end)
+      -- Configuração dos servidores LSP
+      require("lspconfig").lua_ls.setup {
+        capabilities = capabilities,
+      }
 
+      require("lspconfig").ts_ls.setup {
+        capabilities = capabilities,
+      }
+
+      -- Configuração para formatação automática
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id)
           if not client then return end
 
-          if client:supports_method('textDocument/formatting') then
-            -- Format the current buffer on save
+          if client.supports_method('textDocument/formatting') then
             vim.api.nvim_create_autocmd('BufWritePre', {
               buffer = args.buf,
               callback = function()
@@ -40,5 +50,5 @@ return {
         end,
       })
     end,
-  }
+  },
 }
