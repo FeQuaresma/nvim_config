@@ -33,6 +33,9 @@ return {
         capabilities = capabilities,
       }
 
+      require("lspconfig").kotlin_language_server.setup {
+        capabilities = capabilities,
+      }
       -- Configuração para formatação automática
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
